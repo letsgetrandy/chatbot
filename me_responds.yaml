@@ -1,0 +1,6 @@
+- !!python/tuple ['^(top of the |good )?(morning?)', 'good morning, {0}']
+- !!python/tuple ['^(good )?(afternoon)', 'good afternoon, {0}']
+- !!python/tuple ['^(good )?(evening)', 'good evening, {0}']
+- !!python/tuple ['^(have a )?(good ?)?night', 'good night, {0}!']
+- !!python/tuple ['^(hello|hi|howdy|what\''?s up)', 'hey {0}']
+- !!python/tuple ['^(good-?)?bye', 'bye, {0}!']

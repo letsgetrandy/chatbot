@@ -1,0 +1,20 @@
+- !!python/tuple ['^(hey|hi|mornin.?|good morning)( guys| gang| everybody)?$', 'hi
+    {0}']
+- !!python/tuple ['^\:[a-z]+\b', oops.  wrong window.]
+- !!python/tuple ['\b(is )?that(\''s) what she said\??\b', boooooooooooo]
+- !!python/tuple ['^is (it|this) (going to|gonna) take (a )?long( time)?', '(things
+    overheard in {0}''s bedroom.)']
+- !!python/tuple [^how long is (it|this) (going to|gonna) take, '(things overheard
+    in {0}''s bedroom.)']
+- !!python/tuple ['\bis (it|this) (going to|gonna) take (a )?long( time)?', '*giggles*']
+- !!python/tuple ['(it|that)\''?s (so |too )?hard', '*giggles*']
+- !!python/tuple [\byour fault\b, 'hey, let''s not go blaming each other']
+- !!python/tuple [\b(im|not )possible\b, nothing is impossible...]
+- !!python/tuple [(this|that) sucks, and i'm listening to nickelback. today we all
+    lose.]
+- !!python/tuple [^(lol|omg|amazing), ERMAGERRRDD!!!]
+- !!python/tuple [\blol\b, 'i know for a fact you did not just laugh out loud, {0}']
+- !!python/tuple [^your right\b, i think you meant "you're"]
+- !!python/tuple ['^(\w+[,\:]?\s?)?your all set\b', i think you meant "you're"]
+- !!python/tuple [\bhas two thumbs\b, this guy!]
+- !!python/tuple ['^chatbot[\.\?]*$', 'what?']
