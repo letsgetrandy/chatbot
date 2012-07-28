@@ -19,6 +19,8 @@ class Examplebot(ChatBot):
     screen_name = 'Examplebot'
 
     ignore_from = [
+            #I will not respond to messages from the following users
+            #IMPORTANT: include myself here!
             screen_name,
             screen_name.lower(),
             'chatbot',
@@ -26,12 +28,20 @@ class Examplebot(ChatBot):
         ]
 
     my_names = [
+            #I will respond to any names listed here
             'chatbot',
             'examplebot',
+            'alfred',
+            'jeeves',
+            #etc
         ]
 
     aliases = {
-        #tech
+        #map nicknames to logins here
+        #eg:
+        #
+        #'kathy': 'katherine1982',
+        #'tom': 'troper',
     }
 
     #a little moral support
@@ -119,13 +129,12 @@ class Examplebot(ChatBot):
     @responder(r'.{6,}')
     def find_palindrome(bot, m, text, user):
         nopunc = re.sub(r'\W+', '', text.lower())
+        if len(nopunc) < 6:
+            return None
         if nopunc == nopunc[::-1]:
             return 'Wow, {0}! That was a palindrome!'.format(user)
 
-    @responder(r'^help\b')
-    def show_help(self, matches, text, user):
-        return "there is no help."
-
+    #TODO: provide some help
     @me_responder(r'^help\b')
     def show_chatbot_help(self, matches, text, user):
         return "I'll see what I can do."
