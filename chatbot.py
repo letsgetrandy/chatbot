@@ -355,7 +355,7 @@ class ChatBot():
     def twitter_status(self, m, text, user):
         t = self.get_last_tweet(m.group(1))
         if t:
-            return 'last tweet from @%s: %s' % (m.group(1), t)
+            return 'last tweet from @%s: %s' % (m.group(1), t.text)
 
 
 def main():

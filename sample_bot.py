@@ -83,13 +83,6 @@ class Examplebot(ChatBot):
         self.curr_message = None
         return re.sub(m.group(1), m.group(2), self.prev_message)
 
-    #where are the cupcakes?
-    @responder(r'^where(\'s| is| are) th(os)?e cupcake', '^what\'?s the word on the cupcake')
-    def cupcake_status(self, m, text, user):
-        t = self.get_last_tweet('courageouscakes')
-        if t:
-            return 'last tweet: %s' % t
-
     #swear warnings
     @responder(r'\bjesus h|fuck|shit')
     def swear_warnings(self, m, text, user):
