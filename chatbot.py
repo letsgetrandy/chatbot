@@ -29,10 +29,11 @@ class ChatResponder(list):
     Used to parse a list of regular expressions
     and match text to which to respond.
     '''
-    def __call__(self, *expr):
+    def __call__(self, *expr, **kwargs):
         ''' response decorator '''
         def decorator(func):
             func.expressions = expr
+            func.only_for = kwargs.get('only_respond_to', None)
             func.data = None
             self.append(func)
             return func
@@ -41,14 +42,29 @@ class ChatResponder(list):
     def get_response(self, bot, text, user):
         ''' iterate the list of responses and search for a match '''
         for response in self:
-            #a response can have multiple regexes
-            for exp in response.expressions:
-                m = re.search(exp, text, re.M)
-                if m:
-                    #only return if the match gave back text
-                    r = response(bot, m, text, user)
-                    if r:
-                        return r
+            if response.only_for is None:
+                #a response can have multiple regexes
+                for exp in response.expressions:
+                    m = re.search(exp, text, re.M)
+                    if m:
+                        #only return if the match gave back text
+                        r = response(bot, m, text, user)
+                        if r:
+                            return r
+        return None
+
+    def get_personal_response(self, bot, text, user, target_user):
+        ''' search for responses for a specific user '''
+        for response in self:
+            if response.only_for and response.only_for.lower() == target_user.lower():
+                #a response can have multiple regexes
+                for exp in response.expressions:
+                    m = re.search(exp, text, re.M)
+                    if m:
+                        #only return if the match gave back text
+                        r = response(bot, m, text, user)
+                        if r:
+                            return r
         return None
 
 
@@ -169,6 +185,11 @@ class ChatBot():
 
         self.curr_message = msgtext
 
+        #process personalized responses
+        out = responder.get_personal_response(self, msgtext, nicefrom, msgfrom)
+        if out:
+            return self.send_to_chat(out)
+
         #ignore some people
         if msgfrom.lower() in self.ignore_from:
             return
@@ -179,7 +200,7 @@ class ChatBot():
         #first, respond when spoke to...
         if re.search(r'\b(%s)\b' % '|'.join(self.my_names), msgtext):
 
-            #process responses in me_funcs.py
+            #process responses in me_responder
             out = me_responder.get_response(self, msgtext, nicefrom)
             if out:
                 return self.send_to_chat(out)
