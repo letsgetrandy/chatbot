@@ -44,6 +44,9 @@ class Examplebot(ChatBot):
         #'tom': 'troper',
     }
 
+    last_laugh = None
+    last_high_five = None
+
     #a little moral support
     @responder(r'\bback me up\b,?\s({0})|(?:do|would)n\'t you (?:say|agree),?\s({0})|isn\'?t that right,?\s{0}'.format('|'.join(my_names)))
     def moral_support(self, m, text, user):
@@ -60,12 +63,9 @@ class Examplebot(ChatBot):
     def chinese_telephone(self, m, text, user):
         ''' pass a private message via groupchat '''
         target = m.group(3).strip()
-        if target not in self.aliases.keys():
-            return "Sorry, I don't know who %s is." % target
+        if target in self.aliases.keys():
+            target = self.aliases[target]
 
-        print m.groups()
-
-        target = self.aliases[target]
         payload = m.group(5).strip()
 
         if m.group(2) == 'ask':
@@ -79,8 +79,8 @@ class Examplebot(ChatBot):
         payload = re.sub(r'\bs?he\'s\b', "you're", payload)
         payload = re.sub(r'\bs?he\b', "you", payload)
 
-        #still debugging
-        self.send_private_message(recipient=target, message=payload)
+        self.send_private_message(recipient='%s@%s' %
+                (target, self.jid.getDomain()), message=payload)
         if m.group(2) == 'tell':
             return 'telling %s, "%s"' % (target, payload)
         else:
@@ -106,24 +106,25 @@ class Examplebot(ChatBot):
     @responder(r'haha')
     def join_laughter(self, m, text, user):
         #only join once in a 5-minute period
-        if not self.join_laughter.data or (
-                self.join_laughter.data + datetime.timedelta(minutes=5) < datetime.datetime.now()):
-            self.join_laughter.data = datetime.datetime.now()
+        if not self.last_laugh or (
+                self.last_laugh + datetime.timedelta(minutes=5) < datetime.datetime.now()):
+            self.last_laugh = datetime.datetime.now()
             return '%s%s' % (
-                    'ha' * random.randint(2, 5),
-                    '!' * random.randint(1, 4)
+                    'ha' * random.randint(2, 4),
+                    '!' * random.randint(0, 3)
                 )
 
     #join the back-slapping
     @responder(r'^(w00t|yay|awesome|holla|kick[ -]?ass)\!*$')
     def high_five(self, m, text, user):
         #only join once in a 5-minute period
-        if not self.high_five.data or (
-                self.high_five.data + datetime.timedelta(minutes=5) < datetime.datetime.now()):
-            self.high_five.data = datetime.datetime.now()
+        if not self.last_high_five or (
+                self.last_high_five + datetime.timedelta(minutes=5) < datetime.datetime.now()):
+            self.last_high_five = datetime.datetime.now()
             return [
-                'yeah!', 'yay!', 'awesome!', 'solid!', 'w00t!', 'hellz yeah!'
-                ][random.randint(0, 5)]
+                'yeah!', 'yay!', 'awesome!', 'solid!',
+                'w00t!', 'hellz yeah!', 'You go, girl!',
+                ][random.randint(0, 6)]
 
     #find palindromes
     @responder(r'.{6,}')
@@ -134,8 +135,8 @@ class Examplebot(ChatBot):
         if nopunc == nopunc[::-1]:
             return 'Wow, {0}! That was a palindrome!'.format(user)
 
-    #TODO: provide some help
-    @me_responder(r'^help\b')
+    #TODO: add some help features
+    @me_responder(r'\bhelp\b')
     def show_chatbot_help(self, matches, text, user):
         return "I'll see what I can do."
 

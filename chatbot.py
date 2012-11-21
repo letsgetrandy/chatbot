@@ -73,15 +73,23 @@ me_responder = ChatResponder()
 
 
 class ChatBot():
+    #required, override these properties to connect
+    username = ''
+    password = ''
+    chatroom = ''
+    screen_name = ''
+
+    #optional, override these properties for more fun
     my_names = []
     ignore_from = []
     aliases = {}
+    sign_off = 'brb'
 
+    #internal, don't mess with these
     prev_message = ''
     curr_message = ''
     pile_on = ''
     learning = None
-
     timeout = None
     silent = False
 
@@ -100,7 +108,7 @@ class ChatBot():
                 self.chatroom, self.chat_domain, self.screen_name)
 
         self.client = xmpp.Client(jid.getDomain(), debug=[])
-        print "connecting to %s..." % self.chat_domain  # jid.getDomain()
+        print "connecting to %s..." % self.chat_domain
         if not self.client.connect():
             print "unable to connect."
             return
@@ -121,20 +129,22 @@ class ChatBot():
             #load responses when spoken to
             with open('me_responds.yaml') as fh:
                 self.me_responds = yaml.load(fh)
-                fh.close()
 
             #load generic chat responses
             with open('generic_responds.yaml') as fh:
                 self.chat_responds = yaml.load(fh)
-                fh.close()
 
             while self.step():
                 pass
+
+            self.send_to_chat(self.sign_off)
+
+            #this part doesn't seem to be working.
+            #how can i reconnect after an error?
             if not self.stop:
                 print 'reloading'
+                self.startup = datetime.datetime.now() + datetime.timedelta(minutes=1)
                 self.client.reconnectAndReauth()
-
-        self.send_to_chat('brb')
 
     def step(self):
         try:
@@ -195,7 +205,7 @@ class ChatBot():
             return
 
         #log what we're seeing. why not, it could help...
-        print str("%s: %s" % (msgfrom, msgtext))
+        #print str("%s: %s" % (msgfrom, msgtext))
 
         #first, respond when spoke to...
         if re.search(r'\b(%s)\b' % '|'.join(self.my_names), msgtext):
